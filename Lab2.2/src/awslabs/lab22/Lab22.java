@@ -55,8 +55,6 @@ public class Lab22 {
 			AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(new ClasspathPropertiesFileCredentialsProvider());
 			ddbClient.setRegion(region);
 
-			String tableName = "Accounts";
-
 			List<Account> accounts = new ArrayList<Account>();
 			accounts.add(new Account().withCompany("Amazon.com").withEmail("johndoe@amazon.com").withFirst("John")
 					.withLast("Doe").withAge("33"));

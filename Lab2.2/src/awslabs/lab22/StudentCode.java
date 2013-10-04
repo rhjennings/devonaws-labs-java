@@ -28,8 +28,7 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void deleteTable(AmazonDynamoDBClient ddbClient, String tableName) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		super.deleteTable(ddbClient, tableName);
 	}
 
@@ -39,8 +38,7 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void buildTable(AmazonDynamoDBClient ddbClient, String tableName) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		super.buildTable(ddbClient, tableName);
 	}
 
@@ -51,8 +49,7 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public String getTableStatus(AmazonDynamoDBClient ddbClient, String tableName) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		return super.getTableStatus(ddbClient, tableName);
 	}
 
@@ -63,8 +60,7 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public TableDescription getTableDescription(AmazonDynamoDBClient ddbClient, String tableName) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		return super.getTableDescription(ddbClient, tableName);
 	}
 
@@ -76,8 +72,7 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void waitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		super.waitForStatus(ddbClient, tableName, status);
 	}
 
@@ -88,8 +83,7 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void createAccountItem(AmazonDynamoDBClient ddbClient, String tableName, Account account) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		super.createAccountItem(ddbClient, tableName, account);
 	}
 
@@ -101,8 +95,7 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public QueryResult lookupByHashKey(AmazonDynamoDBClient ddbClient, String tableName, String company) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		return super.lookupByHashKey(ddbClient, tableName, company);
 	}
 
@@ -117,8 +110,7 @@ public class StudentCode extends SolutionCode {
 	@Override
 	public void updateIfMatch(AmazonDynamoDBClient ddbClient, String tableName, String email, String company,
 			String firstNameTarget, String firstNameMatch) {
-		// TODO: Replace this call to the super class with your own
-		// implementation of the method.
+		// TODO: Replace this call to the super class with your own implementation of the method.
 		super.updateIfMatch(ddbClient, tableName, email, company, firstNameTarget, firstNameMatch);
 	}
 }
