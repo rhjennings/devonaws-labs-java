@@ -99,7 +99,6 @@ public class Lab21 {
         }
         catch (Exception ex) {
             LabUtility.dumpError(ex);
-            System.out.println("Caught exception: " + ex.getMessage());
         }
 
     }
