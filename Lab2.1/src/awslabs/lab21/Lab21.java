@@ -52,7 +52,7 @@ public class Lab21 {
             // Clean up leftovers from previous instances of this lab
             CleanupPreviousLabRuns(s3Client);
             
-            // Create a bucket
+            // Create a bucketi
             System.out.println("Creating bucket " + bucketName);
             labCode.createBucket(s3Client, bucketName);
 

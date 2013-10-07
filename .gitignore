@@ -4,3 +4,12 @@
 *.jar
 *.war
 *.ear
+
+# Directories #
+/build/
+/bin/
+target/
+ 
+.DS_Store
+.idea/
+*.iml

@@ -1,1 +1,6 @@
 /bin
+
+/.settings
+
+# AWS Credentials #
+AwsCredentials.properties

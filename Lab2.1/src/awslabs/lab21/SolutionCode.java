@@ -39,39 +39,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 
     @Override
-    public void deleteBucket(AmazonS3 s3Client, String bucketName) {
-	// First, try to delete the bucket.
-	DeleteBucketRequest deleteBucketRequest = new DeleteBucketRequest(bucketName);
-	
-	try {
-	    s3Client.deleteBucket(deleteBucketRequest);
-	    // If we got here, no error was generated so we'll assume the bucket was deleted and return.
-	    return;
-	}
-	catch (AmazonS3Exception ex) {
-	    if (!ex.getErrorCode().equals("BucketNotEmpty")) {
-		// The only exception we're going to handle is BucketNotEmpty, so rethrow anything else.
-		throw ex; 
-	    }
-	}
-	
-	// If we got here, the bucket isn't empty, so delete the contents and try again.
-	List<KeyVersion> keys = new ArrayList<KeyVersion>();
-	for (S3ObjectSummary obj : s3Client.listObjects(bucketName).getObjectSummaries()) {
-	    // Add the keys to our list of object.
-	    keys.add(new KeyVersion(obj.getKey()));
-	}
-	// Create the request to delete the objects.
-	DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName);
-	deleteObjectsRequest.withKeys(keys);
-	// Submit the delete objects request.
-	s3Client.deleteObjects(deleteObjectsRequest);
-	
-	// The bucket is empty now, so attempt the delete again.
-	s3Client.deleteBucket(deleteBucketRequest);
-    }
-
-    @Override
     public void createBucket(AmazonS3 s3Client, String bucketName) {
     	// Construct a CreateBucketRequest object that contains the provided bucket name.
     	CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
@@ -107,7 +74,8 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 
     @Override
     public void makeObjectPublic(AmazonS3 s3Client, String bucketName, String key) {
-        // Use the setObjectAcl method of the s3Client object to set the ACL for the specified object to CannedAccessControlList.PublicRead.	
+        // Use the setObjectAcl method of the s3Client object to set the ACL for the specified 
+    	// object to CannedAccessControlList.PublicRead.	
         s3Client.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
     }
 
@@ -117,7 +85,8 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
     	
     	// Construct a GeneratePresignedUrlRequest object for the provided object.
     	GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, key);
-    	// Set the expiration value in the request to the nowPlusOneHour object (this specifies a time one hour from now). 
+    	// Set the expiration value in the request to the nowPlusOneHour object 
+    	// (this specifies a time one hour from now). 
     	generatePresignedUrlRequest.setExpiration(nowPlusOneHour);
     	
         // Submit the request using the generatePresignedUrl method of the s3Client object.
@@ -125,5 +94,37 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
     	// Return the URL as a string.
         return url.toString();
     }
-
+    
+    @Override
+    public void deleteBucket(AmazonS3 s3Client, String bucketName) {
+    	// First, try to delete the bucket.
+    	DeleteBucketRequest deleteBucketRequest = new DeleteBucketRequest(bucketName);
+    	
+    	try {
+    	    s3Client.deleteBucket(deleteBucketRequest);
+    	    // If we got here, no error was generated so we'll assume the bucket was deleted and return.
+    	    return;
+    	}
+    	catch (AmazonS3Exception ex) {
+    	    if (!ex.getErrorCode().equals("BucketNotEmpty")) {
+    		// The only exception we're going to handle is BucketNotEmpty, so rethrow anything else.
+    		throw ex; 
+    	    }
+    	}
+    	
+    	// If we got here, the bucket isn't empty, so delete the contents and try again.
+    	List<KeyVersion> keys = new ArrayList<KeyVersion>();
+    	for (S3ObjectSummary obj : s3Client.listObjects(bucketName).getObjectSummaries()) {
+    	    // Add the keys to our list of object.
+    	    keys.add(new KeyVersion(obj.getKey()));
+    	}
+    	// Create the request to delete the objects.
+    	DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName);
+    	deleteObjectsRequest.withKeys(keys);
+    	// Submit the delete objects request.
+    	s3Client.deleteObjects(deleteObjectsRequest);
+    	
+    	// The bucket is empty now, so attempt the delete again.
+    	s3Client.deleteBucket(deleteBucketRequest);
+    }
 }
