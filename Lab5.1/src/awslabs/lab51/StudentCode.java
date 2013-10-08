@@ -12,7 +12,6 @@
  */
 package awslabs.lab51;
 
-import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +25,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
  * Project: Lab5.1
  */
 public class StudentCode extends SolutionCode {
+	public StudentCode(Lab51 lab) {
+		super(lab);
+	}
 
 	/**
 	 * GetUrlForItem
@@ -84,7 +86,7 @@ public class StudentCode extends SolutionCode {
 	 * @param items
 	 */
 	@Override
-	public void addItemsToPage(AmazonS3Client s3Client, List<Dictionary<String, AttributeValue>> items) {
+	public void addItemsToPage(AmazonS3Client s3Client, List<Map<String, AttributeValue>> items) {
 		// TODO Auto-generated method stub
 		super.addItemsToPage(s3Client, items);
 	}

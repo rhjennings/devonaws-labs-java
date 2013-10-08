@@ -44,12 +44,16 @@
 
             <td class="topalign">
                 <table>
-                    <div id="configPlaceholder" />
+                    <div id="configPlaceholder">
+	                    <%= lab51.getConfigAsHtml() %>
+                    </div>
                 </table>
             </td>
             <td class="topalign">
                 <table>
-                    <div id="sysenvPlaceholder" />
+                    <div id="sysenvPlaceholder">
+                    	<%= lab51.getSysEnvAsHtml() %>
+                    </div>
                 </table>
             </td>       
 
@@ -57,41 +61,14 @@
     </table>
 
     <h2>Image List:</h2>
-    <div id="imageListPlaceholder" />
+    <div id="imageListPlaceholder">
+    	<%= lab51.getImageListAsHtml() %>
+    </div>
 
     <h2>Status Messages:</h2>
-    <div id="statusPlaceholder" />
+    <div id="statusPlaceholder">
+    	<%= lab51.getStatusAsHtml() %>
+    </div> 
     
-
-    <div id="content" class="container">
-        <div class="section grid grid5 s3">
-            <h2>Amazon S3 Buckets:</h2>
-            <ul>
-            <% for (Bucket bucket : s3.listBuckets()) { %>
-               <li> <%= bucket.getName() %> </li>
-            <% } %>
-            </ul>
-        </div>
-
-        <div class="section grid grid5 sdb">
-            <h2>Amazon SimpleDB Domains:</h2>
-            <ul>
-            <% for (String domainName : sdb.listDomains().getDomainNames()) { %>
-               <li> <%= domainName %></li>
-            <% } %>
-            </ul>
-        </div>
-
-        <div class="section grid grid5 gridlast ec2">
-            <h2>Amazon EC2 Instances:</h2>
-            <ul>
-            <% for (Reservation reservation : ec2.describeInstances().getReservations()) { %>
-                <% for (Instance instance : reservation.getInstances()) { %>
-                   <li> <%= instance.getInstanceId() %></li>
-                <% } %>
-            <% } %>
-            </ul>
-        </div>
-    </div>
 </body>
 </html>
