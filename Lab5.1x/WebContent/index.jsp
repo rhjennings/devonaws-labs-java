@@ -1,9 +1,18 @@
-<%@page import="awslabs.lab51.Lab51"%>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ page import="com.amazonaws.*" %>
+<%@ page import="com.amazonaws.auth.*" %>
+<%@ page import="com.amazonaws.services.ec2.*" %>
+<%@ page import="com.amazonaws.services.ec2.model.*" %>
+<%@ page import="com.amazonaws.services.s3.*" %>
+<%@ page import="com.amazonaws.services.s3.model.*" %>
+<%@ page import="com.amazonaws.services.simpledb.*" %>
+<%@ page import="com.amazonaws.services.simpledb.model.*" %>
 
 <%! // Share the client objects across threads to
     // avoid creating new clients for each web request
-    private Lab51 lab51 = new Lab51();
+    private AmazonEC2      ec2;
+    private AmazonS3        s3;
+    private AmazonSimpleDB sdb;
  %>
 
 <%
@@ -21,9 +30,12 @@
 %>
 
 <%
-	
-    if (lab51 == null) {
-
+    if (ec2 == null) {
+        AWSCredentials credentials = new PropertiesCredentials(
+            getClass().getClassLoader().getResourceAsStream("AwsCredentials.properties"));
+        ec2 = new AmazonEC2Client(credentials);
+        s3  = new AmazonS3Client(credentials);
+        sdb = new AmazonSimpleDBClient(credentials);
     }
 %>
 
@@ -31,38 +43,10 @@
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>Developing on AWS - Lab5.1</title>
+    <title>Hello AWS Web World!</title>
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
 </head>
 <body>
-    <table width="90%">
-        <tr>
-            <td><h2>Configuration Parameters:</h2></td>
-            <td><h2>Host Environment:</h2></td>
-        </tr>
-        <tr>
-
-            <td class="topalign">
-                <table>
-                    <div id="configPlaceholder" />
-                </table>
-            </td>
-            <td class="topalign">
-                <table>
-                    <div id="sysenvPlaceholder" />
-                </table>
-            </td>       
-
-        </tr>
-    </table>
-
-    <h2>Image List:</h2>
-    <div id="imageListPlaceholder" />
-
-    <h2>Status Messages:</h2>
-    <div id="statusPlaceholder" />
-    
-
     <div id="content" class="container">
         <div class="section grid grid5 s3">
             <h2>Amazon S3 Buckets:</h2>

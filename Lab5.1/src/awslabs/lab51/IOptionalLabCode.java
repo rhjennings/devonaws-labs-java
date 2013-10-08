@@ -22,15 +22,15 @@ import com.amazonaws.services.s3.AmazonS3Client;
  * Project: Lab5.1
  */
 public interface IOptionalLabCode {
-    Boolean IsImageInDynamo(AmazonDynamoDBClient dynamoDbClient, String tableName, String key);
-    Boolean ValidateSchema(TableDescription tableDescription);
-    TableDescription GetTableDescription(AmazonDynamoDBClient ddbClient, String tableName);
-    String GetTableStatus(AmazonDynamoDBClient ddbClient, String tableName);
-    void WaitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status);
-    void DeleteTable(AmazonDynamoDBClient ddbClient, String tableName);
+    Boolean isImageInDynamo(AmazonDynamoDBClient dynamoDbClient, String tableName, String key);
+    Boolean validateSchema(TableDescription tableDescription);
+    TableDescription getTableDescription(AmazonDynamoDBClient ddbClient, String tableName);
+    String getTableStatus(AmazonDynamoDBClient ddbClient, String tableName);
+    void waitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status);
+    void deleteTable(AmazonDynamoDBClient ddbClient, String tableName);
 
-    void AddImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client, String bucketName,
+    void addImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client, String bucketName,
         String imageKey, String filePath);
 
-    void BuildTable(AmazonDynamoDBClient ddbClient, String tableName);
+    void buildTable(AmazonDynamoDBClient ddbClient, String tableName);
 }

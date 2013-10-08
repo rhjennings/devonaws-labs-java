@@ -27,9 +27,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
  * Project: Lab5.1
  */
 public interface ILabCode {
-    String GetUrlForItem(AmazonS3Client s3Client, String key, String bucket);
-    List<Map<String, AttributeValue>> GetImageItems(AmazonDynamoDBClient dynamoDbClient);
-    AmazonS3Client CreateS3Client(AWSCredentials credentials);
-    AmazonDynamoDBClient CreateDynamoDbClient(AWSCredentials credentials);
-    void AddItemsToPage(AmazonS3Client s3Client, List<Dictionary<String, AttributeValue>> items);
+    String getUrlForItem(AmazonS3Client s3Client, String key, String bucket);
+    List<Map<String, AttributeValue>> getImageItems(AmazonDynamoDBClient dynamoDbClient);
+    AmazonS3Client createS3Client(AWSCredentials credentials);
+    AmazonDynamoDBClient createDynamoDbClient(AWSCredentials credentials);
+    void addItemsToPage(AmazonS3Client s3Client, List<Dictionary<String, AttributeValue>> items);
 }

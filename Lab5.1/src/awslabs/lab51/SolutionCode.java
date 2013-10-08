@@ -46,7 +46,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public String GetUrlForItem(AmazonS3Client s3Client, String key, String bucket) {
+	public String getUrlForItem(AmazonS3Client s3Client, String key, String bucket) {
     	Date nowPlusTwoMinutes = new Date(System.currentTimeMillis() + 2000L);
     	
     	// Construct a GeneratePresignedUrlRequest object for the provided object.
@@ -68,7 +68,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public List<Map<String, AttributeValue>> GetImageItems(AmazonDynamoDBClient dynamoDbClient) {
+	public List<Map<String, AttributeValue>> getImageItems(AmazonDynamoDBClient dynamoDbClient) {
 		try {
     		String tableName = System.getProperty("SESSIONTABLE");
     		String keyPrefix = System.getProperty("PARAM3");
@@ -93,7 +93,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public AmazonS3Client CreateS3Client(AWSCredentials credentials) {
+	public AmazonS3Client createS3Client(AWSCredentials credentials) {
 	    Region region = Region.getRegion(Regions.fromName(System.getProperty("REGION")));
 	    AmazonS3Client client = new AmazonS3Client();
 	    client.setRegion(region);
@@ -108,7 +108,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public AmazonDynamoDBClient CreateDynamoDbClient(AWSCredentials credentials) {
+	public AmazonDynamoDBClient createDynamoDbClient(AWSCredentials credentials) {
 	    Region region = Region.getRegion(Regions.fromName(System.getProperty("REGION")));
 	    AmazonDynamoDBClient client = new AmazonDynamoDBClient();
 	    client.setRegion(region);
@@ -123,7 +123,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @param items
 	 */
 	@Override
-	public void AddItemsToPage(AmazonS3Client s3Client, List<Dictionary<String, AttributeValue>> items) {
+	public void addItemsToPage(AmazonS3Client s3Client, List<Dictionary<String, AttributeValue>> items) {
 		// TODO Auto-generated method stub
 
 	}
@@ -138,7 +138,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public Boolean IsImageInDynamo(AmazonDynamoDBClient dynamoDbClient, String tableName, String key) {
+	public Boolean isImageInDynamo(AmazonDynamoDBClient dynamoDbClient, String tableName, String key) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -150,7 +150,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public Boolean ValidateSchema(TableDescription tableDescription) {
+	public Boolean validateSchema(TableDescription tableDescription) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -163,7 +163,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public TableDescription GetTableDescription(AmazonDynamoDBClient ddbClient, String tableName) {
+	public TableDescription getTableDescription(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -176,7 +176,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @return
 	 */
 	@Override
-	public String GetTableStatus(AmazonDynamoDBClient ddbClient, String tableName) {
+	public String getTableStatus(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -189,7 +189,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @param status
 	 */
 	@Override
-	public void WaitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status) {
+	public void waitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status) {
 		// TODO Auto-generated method stub
 
 	}
@@ -201,7 +201,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @param tableName
 	 */
 	@Override
-	public void DeleteTable(AmazonDynamoDBClient ddbClient, String tableName) {
+	public void deleteTable(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
 
 	}
@@ -217,7 +217,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @param filePath
 	 */
 	@Override
-	public void AddImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client,
+	public void addImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client,
 			String bucketName, String imageKey, String filePath) {
 		// TODO Auto-generated method stub
 
@@ -230,7 +230,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 * @param tableName
 	 */
 	@Override
-	public void BuildTable(AmazonDynamoDBClient ddbClient, String tableName) {
+	public void buildTable(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
 
 	}

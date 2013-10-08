@@ -1,21 +1,20 @@
-/** 
+/**
  * Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not 
- * use this file except in compliance with the License. A copy of the License 
- * is located at
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
  * 
- * 	http://aws.amazon.com/apache2.0/
+ * http://aws.amazon.com/apache2.0/
  * 
- * or in the "LICENSE" file accompanying this file. This file is distributed 
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
- * express or implied. See the License for the specific language governing 
- * permissions and limitations under the License.
+ * or in the "LICENSE" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 package awslabs.lab51;
 
 import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
@@ -37,9 +36,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public String GetUrlForItem(AmazonS3Client s3Client, String key, String bucket) {
+	public String getUrlForItem(AmazonS3Client s3Client, String key, String bucket) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.getUrlForItem(s3Client, key, bucket);
 	}
 
 	/**
@@ -49,9 +48,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public List<Dictionary<String, AttributeValue>> GetImageItems(AmazonDynamoDBClient dynamoDbClient) {
+	public List<Map<String, AttributeValue>> getImageItems(AmazonDynamoDBClient dynamoDbClient) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.getImageItems(dynamoDbClient);
 	}
 
 	/**
@@ -61,9 +60,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public AmazonS3Client CreateS3Client(AWSCredentials credentials) {
+	public AmazonS3Client createS3Client(AWSCredentials credentials) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.createS3Client(credentials);
 	}
 
 	/**
@@ -73,9 +72,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public AmazonDynamoDBClient CreateDynamoDbClient(AWSCredentials credentials) {
+	public AmazonDynamoDBClient createDynamoDbClient(AWSCredentials credentials) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.createDynamoDbClient(credentials);
 	}
 
 	/**
@@ -85,11 +84,10 @@ public class StudentCode extends SolutionCode {
 	 * @param items
 	 */
 	@Override
-	public void AddItemsToPage(AmazonS3Client s3Client, List<Dictionary<String, AttributeValue>> items) {
+	public void addItemsToPage(AmazonS3Client s3Client, List<Dictionary<String, AttributeValue>> items) {
 		// TODO Auto-generated method stub
-
+		super.addItemsToPage(s3Client, items);
 	}
-
 
 	/**
 	 * IsImageInDynamo
@@ -100,9 +98,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public Boolean IsImageInDynamo(AmazonDynamoDBClient dynamoDbClient, String tableName, String key) {
+	public Boolean isImageInDynamo(AmazonDynamoDBClient dynamoDbClient, String tableName, String key) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.isImageInDynamo(dynamoDbClient, tableName, key);
 	}
 
 	/**
@@ -112,9 +110,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public Boolean ValidateSchema(TableDescription tableDescription) {
+	public Boolean validateSchema(TableDescription tableDescription) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.validateSchema(tableDescription);
 	}
 
 	/**
@@ -125,9 +123,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public TableDescription GetTableDescription(AmazonDynamoDBClient ddbClient, String tableName) {
+	public TableDescription getTableDescription(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.getTableDescription(ddbClient, tableName);
 	}
 
 	/**
@@ -138,9 +136,9 @@ public class StudentCode extends SolutionCode {
 	 * @return
 	 */
 	@Override
-	public String GetTableStatus(AmazonDynamoDBClient ddbClient, String tableName) {
+	public String getTableStatus(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
-		return null;
+		return super.getTableStatus(ddbClient, tableName);
 	}
 
 	/**
@@ -151,9 +149,9 @@ public class StudentCode extends SolutionCode {
 	 * @param status
 	 */
 	@Override
-	public void WaitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status) {
+	public void waitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status) {
 		// TODO Auto-generated method stub
-
+		super.waitForStatus(ddbClient, tableName, status);
 	}
 
 	/**
@@ -163,9 +161,9 @@ public class StudentCode extends SolutionCode {
 	 * @param tableName
 	 */
 	@Override
-	public void DeleteTable(AmazonDynamoDBClient ddbClient, String tableName) {
+	public void deleteTable(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
-
+		super.deleteTable(ddbClient, tableName);
 	}
 
 	/**
@@ -179,10 +177,10 @@ public class StudentCode extends SolutionCode {
 	 * @param filePath
 	 */
 	@Override
-	public void AddImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client,
+	public void addImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client,
 			String bucketName, String imageKey, String filePath) {
 		// TODO Auto-generated method stub
-
+		super.addImage(dynamoDbClient, tableName, s3Client, bucketName, imageKey, filePath);
 	}
 
 	/**
@@ -192,9 +190,9 @@ public class StudentCode extends SolutionCode {
 	 * @param tableName
 	 */
 	@Override
-	public void BuildTable(AmazonDynamoDBClient ddbClient, String tableName) {
+	public void buildTable(AmazonDynamoDBClient ddbClient, String tableName) {
 		// TODO Auto-generated method stub
-
+		super.buildTable(ddbClient, tableName);
 	}
 
 }
