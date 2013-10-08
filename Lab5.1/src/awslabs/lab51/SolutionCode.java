@@ -13,6 +13,7 @@
 package awslabs.lab51;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -317,21 +318,24 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	 */
 	@Override
 	public void addImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client,
-			String bucketName, String imageKey, String filePath) {
+			String bucketName, String imageKey, String filePath)  {
 
+		labController.logMessageToPage("ME: " + this.getClass().getResource("/").toString());
 		try {
 			File file = new File(filePath);
 			if (file.exists()) {
 				// s3Client.putObject(bucketName, imageKey, file);
-				s3Client.putObject(bucketName, imageKey,
-						ClassLoader.class.getResourceAsStream("/Lab5.1/src/awslabs/lab51/decoy"), new ObjectMetadata());
+				//labController.logMessageToPage("Request to post image:" + filePath);
+				s3Client.putObject(bucketName, imageKey, file);
+				//labController.logMessageToPage("Success:" + filePath);
+				
 				PutItemRequest putItemRequest = new PutItemRequest().withTableName(tableName);
 				putItemRequest.addItemEntry("Key", new AttributeValue(imageKey));
 				putItemRequest.addItemEntry("Bucket", new AttributeValue(bucketName));
 				dynamoDbClient.putItem(putItemRequest);
 				labController.logMessageToPage("Added imageKey: " + imageKey);
 			} else {
-				labController.logMessageToPage("Image doesn't exist on disk. Skipped: " + imageKey);
+				labController.logMessageToPage("Image doesn't exist on disk. Skipped: " + imageKey + "[" + filePath + "]");
 			}
 		} catch (Exception ex) {
 			labController.logMessageToPage("addImage Error: " + ex.getMessage());

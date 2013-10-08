@@ -110,6 +110,7 @@ public class Lab51 {
 
 		// Valid now, so let's look for our images. If they're not in DynamoDB, we need to add them to DynamoDB *and* S3
 		List<String> missingImages = new ArrayList<String>();
+
 		for (String image : imageNames) {
 			if (!optionalLabCode.isImageInDynamo(dynamoDbClient, tableName, image)) {
 				// It's not there, so add it to the list of missing images.
@@ -117,6 +118,7 @@ public class Lab51 {
 			}
 		}
 
+		// If our list of images  is missing anything, be sure to add it before formatting them for the page.
 		if (missingImages.size() > 0) {
 			String bucketName = "awslabj" + UUID.randomUUID().toString().substring(0, 8);
 			logMessageToPage("Adding images to S3 (%s) and DynamoDB", bucketName);
@@ -125,9 +127,15 @@ public class Lab51 {
 			AmazonS3Client s3Client = labCode.createS3Client(credentials);
 			// Create the bucket first
 			s3Client.createBucket(bucketName);
+			String rootPath = Lab51.class.getResource("/").getFile(); 
 			for (String image : missingImages) {
-				String filePath = image;
-				optionalLabCode.addImage(dynamoDbClient, tableName, s3Client, bucketName, image, filePath);
+				String filePath = rootPath + image;
+				if (new File(filePath).exists()) {
+					optionalLabCode.addImage(dynamoDbClient, tableName, s3Client, bucketName, image, filePath);
+				}
+				else {
+					logMessageToPage("File not found on disk: %s", filePath);
+				}
 			}
 		}
 	}
