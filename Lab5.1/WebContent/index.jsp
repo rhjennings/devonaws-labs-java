@@ -22,9 +22,10 @@
 
 <%
 	
-    if (lab51 == null) {
-
+    if (lab51 != null) {
+		lab51.syncImages();
     }
+
 %>
 
 <!DOCTYPE html>
@@ -35,25 +36,22 @@
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen">
 </head>
 <body>
-    <table width="90%">
+	
+    <table class="90percent">
         <tr>
             <td><h2>Configuration Parameters:</h2></td>
             <td><h2>Host Environment:</h2></td>
         </tr>
         <tr>
-
+ 
             <td class="topalign">
-                <table>
-                    <div id="configPlaceholder">
-	                    <%= lab51.getConfigAsHtml() %>
-                    </div>
+                <table class="configPlaceholder">
+					<%= lab51.getConfigAsHtml() %>
                 </table>
             </td>
             <td class="topalign">
-                <table>
-                    <div id="sysenvPlaceholder">
-                    	<%= lab51.getSysEnvAsHtml() %>
-                    </div>
+                <table class="sysenvPlaceholder">
+                    <%= lab51.getSysEnvAsHtml() %>
                 </table>
             </td>       
 
@@ -69,6 +67,6 @@
     <div id="statusPlaceholder">
     	<%= lab51.getStatusAsHtml() %>
     </div> 
-    
+     
 </body>
 </html>

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -62,37 +63,47 @@ public class Lab51 {
 		// DECOY IMAGE
 		imageNames.add("decoy/decoy.png");
 
-		logMessageToPage(System.getProperty("user.dir"));
-
+		
 		try {
 			credentials = credsProvider.getCredentials();
+			
 		} catch (Exception ex) {
 			logMessageToPage(ex.getMessage());
 			return;
 		}
-		// logMessageToPage(ClassLoader.class.getResource("/Lab5.1/src").toString());
-		// ClassLoader.class.getResourceAsStream("/path/file.ext");
-
+		finally {
+    		if (credentials==null) {
+    			logMessageToPage("No credentials found.");
+    			return;
+    		}
+		}
 		// Import custom settings, if provided. Source: Our custom config to ElasticBeanstalk.
+    		
 		prepSettings();
 
 		// Now that our objects are created, let's inspect the values and provide additional defaults where needed.
-		if (System.getProperty("SESSIONTABLE") == null) {
+		if (System.getProperty("SESSIONTABLE") == null || System.getProperty("SESSIONTABLE").isEmpty()) {
 			logMessageToPage("SESSIONTABLE wasn't defined. Using default value 'imageindex'");
 			System.setProperty("SESSIONTABLE", "imageindex");
 		}
-		String tableName = System.getProperty("SESSIONTABLE");
+		
 
-		if (System.getProperty("REGION") == null) {
+		if (System.getProperty("REGION") == null || System.getProperty("REGION").isEmpty()) {
 			logMessageToPage("REGION wasn't defined. Using default value 'us-east-1'");
 			System.setProperty("REGION", "us-east-1");
 		}
 
-		if (System.getProperty("PARAM3") == null) {
+		if (System.getProperty("PARAM3") == null || System.getProperty("PARAM3").isEmpty()) {
 			logMessageToPage("PARAM3 wasn't defined. Using default value 'icons'");
 			System.setProperty("PARAM3", "icons");
 		}
 
+	}
+	
+	public void syncImages() {
+		try {
+		String tableName = System.getProperty("SESSIONTABLE");
+		
 		AmazonDynamoDBClient dynamoDbClient = labCode.createDynamoDbClient(credentials);
 		TableDescription tableDescription = optionalLabCode.getTableDescription(dynamoDbClient, tableName);
 		if (tableDescription == null) {
@@ -100,6 +111,7 @@ public class Lab51 {
 			optionalLabCode.buildTable(dynamoDbClient, tableName);
 			tableDescription = optionalLabCode.getTableDescription(dynamoDbClient, tableName);
 		}
+
 		// We have a table. Let's see if it's valid.
 		if (!optionalLabCode.validateSchema(tableDescription)) {
 			// It's not valid, so let's rebuild it.
@@ -137,6 +149,10 @@ public class Lab51 {
 					logMessageToPage("File not found on disk: %s", filePath);
 				}
 			}
+		}
+		}
+		catch (Exception ex) {
+			logMessageToPage("syncImages() error: %s", ex.getMessage());
 		}
 	}
 
@@ -184,11 +200,12 @@ public class Lab51 {
 
 	public String getStatusAsHtml() {
 		StringBuilder sb = new StringBuilder();
-		CharSequence nl = System.lineSeparator();
+		String newline = System.getProperty("line.separator");
 		if (statusLog.size() > 0) {
 			sb.append("<ul>");
 			for (String status : statusLog) {
-				sb.append(String.format("<li>%s</li>%s", status.contains(nl) ? formatForPage(status) : status, nl));
+				sb.append(String.format("<li>%s</li>%s", status.contains(newline) ? formatForPage(status) : status, newline));
+				//sb.append(String.format("<li>%s</li>", status));
 				// System.lineSeparator()));
 			}
 			sb.append("</ul>");
@@ -251,19 +268,31 @@ public class Lab51 {
 				try {
 					// Take each property from the file and add it to the System properties.
 					properties.load(new FileInputStream(settingsFile));
-					System.setProperties(properties);
+					for (Entry<Object, Object> entry : properties.entrySet()) {
+						System.setProperty((String)entry.getKey(), (String)entry.getValue());
+					}
+					
+					logMessageToPage("Properties imported from %s", settingsFileName);
 				} catch (Exception ex) {
 					logMessageToPage("Error while loading settings from %s:%s%s", settingsFileName,
 							System.lineSeparator(), ex.getMessage());
 					return;
 				}
 			}
+			else {
+				logMessageToPage("Settings file was specified but doesn't exist.");
+			}
+		}
+		else {
+			logMessageToPage("No settings file speicified.");
 		}
 	}
 
 	private String formatForPage(String status) {
-		return String.format("<p>%s</p>",
-				status.replaceAll("  ", "&nbsp;&nbsp;").replaceAll(System.lineSeparator(), "<br/>"));
+		String temp = status.replaceAll("  ", "&nbsp;&nbsp;");
+		temp = temp.replaceAll(System.getProperty("line.separator"), "<br/>");
+		
+		return String.format("<div>%s</div>", temp);
 	}
 
 	/**

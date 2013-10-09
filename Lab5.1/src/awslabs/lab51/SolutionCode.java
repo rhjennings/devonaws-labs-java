@@ -13,7 +13,6 @@
 package awslabs.lab51;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +29,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
+import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DescribeTableResult;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
@@ -40,7 +40,6 @@ import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 
 /**
  * Project: Lab5.1
@@ -56,14 +55,6 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		labController = lab;
 	}
 
-	/**
-	 * GetUrlForItem
-	 * 
-	 * @param s3Client
-	 * @param key
-	 * @param bucket
-	 * @return
-	 */
 	@Override
 	public String getUrlForItem(AmazonS3Client s3Client, String key, String bucket) {
 		Date nowPlusTwoMinutes = new Date(System.currentTimeMillis() + 2000L);
@@ -80,12 +71,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		return url.toString();
 	}
 
-	/**
-	 * GetImageItems
-	 * 
-	 * @param dynamoDbClient
-	 * @return
-	 */
+
 	@Override
 	public List<Map<String, AttributeValue>> getImageItems(AmazonDynamoDBClient dynamoDbClient) {
 		try {
@@ -100,18 +86,12 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 
 			return dynamoDbClient.scan(scanRequest).getItems();
 		} catch (Exception ex) {
-			// TODO: RHY - Do the equivalent of this:
-			// _Default.LogMessageToPage("GetImageItems Error: {0}", ex.Message);
+			labController.logMessageToPage("GetImageItems Error: " + ex.getMessage() + ":" + ex.getStackTrace());
 			return null;
 		}
 	}
 
-	/**
-	 * CreateS3Client
-	 * 
-	 * @param credentials
-	 * @return
-	 */
+
 	@Override
 	public AmazonS3Client createS3Client(AWSCredentials credentials) {
 		Region region = Region.getRegion(Regions.fromName(System.getProperty("REGION")));
@@ -121,12 +101,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		return client;
 	}
 
-	/**
-	 * CreateDynamoDbClient
-	 * 
-	 * @param credentials
-	 * @return
-	 */
+
 	@Override
 	public AmazonDynamoDBClient createDynamoDbClient(AWSCredentials credentials) {
 		Region region = Region.getRegion(Regions.fromName(System.getProperty("REGION")));
@@ -136,12 +111,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		return client;
 	}
 
-	/**
-	 * AddItemsToPage
-	 * 
-	 * @param s3Client
-	 * @param items
-	 */
+
 	@Override
 	public void addItemsToPage(AmazonS3Client s3Client, List<Map<String, AttributeValue>> items) {
 		for (Map<String, AttributeValue> item : items) {
@@ -153,17 +123,8 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 				labController.addImageToPage(itemUrl, bucket.getS(), key.getS());
 			}
 		}
-
 	}
 
-	/**
-	 * IsImageInDynamo
-	 * 
-	 * @param dynamoDbClient
-	 * @param tableName
-	 * @param key
-	 * @return
-	 */
 	@Override
 	public Boolean isImageInDynamo(AmazonDynamoDBClient dynamoDbClient, String tableName, String key) {
 		QueryRequest queryRequest = new QueryRequest(tableName).withConsistentRead(true);
@@ -173,12 +134,6 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		return (dynamoDbClient.query(queryRequest).getCount() > 0);
 	}
 
-	/**
-	 * ValidateSchema
-	 * 
-	 * @param tableDescription
-	 * @return
-	 */
 	@Override
 	public Boolean validateSchema(TableDescription tableDescription) {
 		if (tableDescription == null) {
@@ -229,18 +184,11 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 						+ ") in the key schema.");
 			}
 		}
-		labController.logMessageToPage("Table schema is as expected.");
+		labController.logMessageToPage("Table schema is valid.");
 		// We've passed our checks.
 		return true;
 	}
 
-	/**
-	 * GetTableDescription
-	 * 
-	 * @param ddbClient
-	 * @param tableName
-	 * @return
-	 */
 	@Override
 	public TableDescription getTableDescription(AmazonDynamoDBClient ddbClient, String tableName) {
 		try {
@@ -259,13 +207,6 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		}
 	}
 
-	/**
-	 * GetTableStatus
-	 * 
-	 * @param ddbClient
-	 * @param tableName
-	 * @return
-	 */
 	@Override
 	public String getTableStatus(AmazonDynamoDBClient ddbClient, String tableName) {
 		TableDescription tableDescription = getTableDescription(ddbClient, tableName);
@@ -275,13 +216,6 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		return tableDescription.getTableStatus();
 	}
 
-	/**
-	 * WaitForStatus
-	 * 
-	 * @param ddbClient
-	 * @param tableName
-	 * @param status
-	 */
 	@Override
 	public void waitForStatus(AmazonDynamoDBClient ddbClient, String tableName, String status) {
 		while (!getTableStatus(ddbClient, tableName).equals(status)) {
@@ -294,40 +228,20 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		}
 	}
 
-	/**
-	 * DeleteTable
-	 * 
-	 * @param ddbClient
-	 * @param tableName
-	 */
+	
 	@Override
 	public void deleteTable(AmazonDynamoDBClient ddbClient, String tableName) {
-		// TODO Auto-generated method stub
-
+		ddbClient.deleteTable(new DeleteTableRequest().withTableName(tableName));
 	}
 
-	/**
-	 * AddImage
-	 * 
-	 * @param dynamoDbClient
-	 * @param tableName
-	 * @param s3Client
-	 * @param bucketName
-	 * @param imageKey
-	 * @param filePath
-	 */
 	@Override
 	public void addImage(AmazonDynamoDBClient dynamoDbClient, String tableName, AmazonS3Client s3Client,
 			String bucketName, String imageKey, String filePath)  {
 
-		labController.logMessageToPage("ME: " + this.getClass().getResource("/").toString());
 		try {
 			File file = new File(filePath);
 			if (file.exists()) {
-				// s3Client.putObject(bucketName, imageKey, file);
-				//labController.logMessageToPage("Request to post image:" + filePath);
 				s3Client.putObject(bucketName, imageKey, file);
-				//labController.logMessageToPage("Success:" + filePath);
 				
 				PutItemRequest putItemRequest = new PutItemRequest().withTableName(tableName);
 				putItemRequest.addItemEntry("Key", new AttributeValue(imageKey));
@@ -343,12 +257,6 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 
 	}
 
-	/**
-	 * BuildTable
-	 * 
-	 * @param ddbClient
-	 * @param tableName
-	 */
 	@Override
 	public void buildTable(AmazonDynamoDBClient ddbClient, String tableName) {
 		CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName);

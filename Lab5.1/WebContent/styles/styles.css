@@ -28,3 +28,11 @@ h2 {
     display:inline-block; 
     width: 325px;
 }
+
+.90percent {
+	width: 90%;
+}
+
+.configPlaceholder {}
+
+.sysenvPlaceholder {}
