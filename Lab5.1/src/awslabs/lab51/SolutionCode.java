@@ -78,15 +78,18 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 			String tableName = System.getProperty("SESSIONTABLE");
 			String keyPrefix = System.getProperty("PARAM3");
 
-			Map<String, Condition> scanFilter = new HashMap<String, Condition>();
-			scanFilter.put("Key", new Condition().withAttributeValueList(new AttributeValue().withS(keyPrefix))
-					.withComparisonOperator("BEGINS_WITH"));
-			ScanRequest scanRequest = new ScanRequest(tableName).withSelect("ALL_ATTRIBUTES")
-					.withScanFilter(scanFilter);
+			ScanRequest scanRequest = new ScanRequest(tableName).withSelect("ALL_ATTRIBUTES");
+			
+			if (!keyPrefix.isEmpty()) {
+    			Map<String, Condition> scanFilter = new HashMap<String, Condition>();
+    			scanFilter.put("Key", new Condition().withAttributeValueList(new AttributeValue().withS(keyPrefix))
+    					.withComparisonOperator("BEGINS_WITH"));
+    			scanRequest.withScanFilter(scanFilter);
+			}
 
 			return dynamoDbClient.scan(scanRequest).getItems();
 		} catch (Exception ex) {
-			labController.logMessageToPage("GetImageItems Error: " + ex.getMessage() + ":" + ex.getStackTrace());
+			labController.logMessageToPage("getImageItems Error: " + ex.getMessage() + ":" + ex.getStackTrace());
 			return null;
 		}
 	}
@@ -278,7 +281,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 		ddbClient.createTable(createTableRequest);
 		// Pause until the table is active
 		waitForStatus(ddbClient, tableName, "ACTIVE");
-		System.out.println("Table created and active.");
+		labController.logMessageToPage("Table created and active.");
 	}
 
 }
