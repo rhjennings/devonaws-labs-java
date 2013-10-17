@@ -28,10 +28,13 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CreateBucketRequest;
 
 /**
  * Project: Lab5.1
@@ -47,14 +50,12 @@ public class Lab51 {
 	private InstanceIdentity instance = new InstanceIdentity();
 
 	private AWSCredentials credentials;
-	
-	private Boolean isAbortState = false;
 
 	// Create a custom credentials provider chain.
 	private AWSCredentialsProvider credsProvider = new AWSCredentialsProviderChain(
 			new EnvironmentVariableCredentialsProvider(), new InstanceProfileCredentialsProvider());
 
-	public Lab51() {		
+	public Lab51() {
 		// Add our images to the list.
 		imageNames.add("icons/dynamodb.png");
 		imageNames.add("icons/ec2.png");
@@ -71,13 +72,11 @@ public class Lab51 {
 			
 		} catch (Exception ex) {
 			logMessageToPage(ex.getMessage());
-			isAbortState = true;
 			return;
 		}
 		finally {
     		if (credentials==null) {
     			logMessageToPage("No credentials found.");
-    			isAbortState = true;
     			return;
     		}
 		}
@@ -98,155 +97,125 @@ public class Lab51 {
 		}
 
 		if (System.getProperty("PARAM3") == null || System.getProperty("PARAM3").isEmpty()) {
-			logMessageToPage("PARAM3 wasn't defined. Using an empty string.");
-			System.setProperty("PARAM3", "");
+			logMessageToPage("PARAM3 wasn't defined. Using default value 'icons'");
+			System.setProperty("PARAM3", "icons");
 		}
 
 	}
 	
 	public void syncImages() {
-		if (!isAbortState) {
-    		try {
-        		String tableName = System.getProperty("SESSIONTABLE");
-        		logMessageToPage("Looking for '%s' table.",tableName);
-        		AmazonDynamoDBClient dynamoDbClient = labCode.createDynamoDbClient(credentials);
-        		TableDescription tableDescription = optionalLabCode.getTableDescription(dynamoDbClient, tableName);
-        		if (tableDescription == null) {
-        			logMessageToPage("No table found. Creating it.");
-        			optionalLabCode.buildTable(dynamoDbClient, tableName);
-        			tableDescription = optionalLabCode.getTableDescription(dynamoDbClient, tableName);
-        		}
-        
-        		// We have a table. Let's see if it's valid.
-        		if (!optionalLabCode.validateSchema(tableDescription)) {
-        			// It's not valid, so let's rebuild it.
-        			logMessageToPage("Table schema is incorrect. Dropping table and rebuilding it.");
-        			optionalLabCode.deleteTable(dynamoDbClient, tableName);
-        			optionalLabCode.buildTable(dynamoDbClient, tableName);
-        		}
-        
-        		// Valid now, so let's look for our images. If they're not in DynamoDB, 
-        		// we need to add them to DynamoDB *and* S3
-        		List<String> missingImages = new ArrayList<String>();
-        
-        		for (String image : imageNames) {
-        			if (!optionalLabCode.isImageInDynamo(dynamoDbClient, tableName, image)) {
-        				// It's not there, so add it to the list of missing images.
-        				missingImages.add(image);
-        			}
-        		}
-        
-        		// If our list of images  is missing anything, be sure to add it before formatting them for the page.
-        		if (missingImages.size() > 0) {
-        			String bucketName = "awslabj" + UUID.randomUUID().toString().substring(0, 8);
-        			logMessageToPage("Adding images to S3 (%s) and DynamoDB", bucketName);
-        			// Add the missing images now.
-        
-        			AmazonS3Client s3Client = labCode.createS3Client(credentials);
-        			// Create the bucket first
-        			s3Client.createBucket(bucketName);
-        			String rootPath = Lab51.class.getResource("/").getFile(); 
-        			for (String image : missingImages) {
-        				String filePath = rootPath + image;
-        				if (new File(filePath).exists()) {
-        					optionalLabCode.addImage(dynamoDbClient, tableName, s3Client, bucketName, image, filePath);
-        				}
-        				else {
-        					logMessageToPage("File not found on disk: %s", filePath);
-        				}
-        			}
-        		}
-    		}
-    		catch (Exception ex) {
-    			logMessageToPage("syncImages() error: %s", ex.getMessage());
-    		}
+		try {
+		String tableName = System.getProperty("SESSIONTABLE");
+		
+		AmazonDynamoDBClient dynamoDbClient = labCode.createDynamoDbClient(credentials);
+		TableDescription tableDescription = optionalLabCode.getTableDescription(dynamoDbClient, tableName);
+		if (tableDescription == null) {
+			logMessageToPage("No table found. Creating it.");
+			optionalLabCode.buildTable(dynamoDbClient, tableName);
+			tableDescription = optionalLabCode.getTableDescription(dynamoDbClient, tableName);
 		}
-		else {
-			logMessageToPage("syncImage() call was skipped because the application load process was aborted.");
+
+		// We have a table. Let's see if it's valid.
+		if (!optionalLabCode.validateSchema(tableDescription)) {
+			// It's not valid, so let's rebuild it.
+			logMessageToPage("Table schema is incorrect. Dropping table and rebuilding it.");
+			optionalLabCode.deleteTable(dynamoDbClient, tableName);
+			optionalLabCode.buildTable(dynamoDbClient, tableName);
+		}
+
+		// Valid now, so let's look for our images. If they're not in DynamoDB, we need to add them to DynamoDB *and* S3
+		List<String> missingImages = new ArrayList<String>();
+
+		for (String image : imageNames) {
+			if (!optionalLabCode.isImageInDynamo(dynamoDbClient, tableName, image)) {
+				// It's not there, so add it to the list of missing images.
+				missingImages.add(image);
+			}
+		}
+
+		// If our list of images  is missing anything, be sure to add it before formatting them for the page.
+		if (missingImages.size() > 0) {
+			String bucketName = "awslabj" + UUID.randomUUID().toString().substring(0, 8);
+			logMessageToPage("Adding images to S3 (%s) and DynamoDB", bucketName);
+			// Add the missing images now.
+
+			AmazonS3Client s3Client = labCode.createS3Client(credentials);
+			// Create the bucket first
+			
+			s3Client.createBucket(bucketName, com.amazonaws.services.s3.model.Region.fromValue(System.getProperty("REGION")));
+			String rootPath = Lab51.class.getResource("/").getFile(); 
+			for (String image : missingImages) {
+				String filePath = rootPath + image;
+				if (new File(filePath).exists()) {
+					optionalLabCode.addImage(dynamoDbClient, tableName, s3Client, bucketName, image, filePath);
+				}
+				else {
+					logMessageToPage("File not found on disk: %s", filePath);
+				}
+			}
+		}
+		}
+		catch (Exception ex) {
+			logMessageToPage("syncImages() error: %s", ex.getMessage());
 		}
 	}
 
 	public String getConfigAsHtml() {
-		if (!isAbortState) {
-    		StringBuilder sb = new StringBuilder();
-    		sb.append(String.format("<tr><td><b>%s</b> <i>%s</i>&nbsp;</td><td>&nbsp;%s</td></tr>", "SESSIONTABLE",
-    				"(table name)", System.getProperty("SESSIONTABLE")));
-    		sb.append(String.format("<tr><td><b>%s</b> <i>%s</i>&nbsp;</td><td>&nbsp;%s</td></tr>", "REGION",
-    				"(target region)", System.getProperty("REGION")));
-    		sb.append(String.format("<tr><td><b>%s</b> <i>%s</i>&nbsp;</td><td>&nbsp;%s</td></tr>", "PARAM3",
-    				"(key prefix)", System.getProperty("PARAM3")));
-    		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "runtime.settings",
-    				System.getProperty("runtime.settings")));
-    
-    		return sb.toString();
-		}
-		else {
-			logMessageToPage("getConfigAsHtml() call was skipped because the application load process was aborted.");
-			return "";
-		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("<tr><td><b>%s</b> <i>%s</i>&nbsp;</td><td>&nbsp;%s</td></tr>", "SESSIONTABLE",
+				"(table name)", System.getProperty("SESSIONTABLE")));
+		sb.append(String.format("<tr><td><b>%s</b> <i>%s</i>&nbsp;</td><td>&nbsp;%s</td></tr>", "REGION",
+				"(target region)", System.getProperty("REGION")));
+		sb.append(String.format("<tr><td><b>%s</b> <i>%s</i>&nbsp;</td><td>&nbsp;%s</td></tr>", "PARAM3",
+				"(key prefix)", System.getProperty("PARAM3")));
+		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "runtime.settings",
+				System.getProperty("runtime.settings")));
+
+		return sb.toString();
 	}
 
 	public String getSysEnvAsHtml() {
-		if (!isAbortState) {
-    		StringBuilder sb = new StringBuilder();
-    		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "EC2 Instance ID",
-    				instance.getInstanceId()));
-    		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "Instance Type",
-    				instance.getInstanceType()));
-    		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "Host Instance Region",
-    				instance.getRegion()));
-    		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "Availability Zone",
-    				instance.getAvailabilityZone()));
-    
-    		String[] keys = { "PROCESSOR_IDENTIFIER" };
-    		for (String key : keys) {
-    			sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", key, System.getenv(key)));
-    		}
-    
-    		return sb.toString();
-		}
-		else {
-			logMessageToPage("getSysEnvAsHtml() call was skipped because the application load process was aborted.");
-			return "";
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "EC2 Instance ID",
+				instance.getInstanceId()));
+		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "Instance Type",
+				instance.getInstanceType()));
+		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "Host Instance Region",
+				instance.getRegion()));
+		sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", "Availability Zone",
+				instance.getAvailabilityZone()));
+
+		String[] keys = { "PROCESSOR_IDENTIFIER" };
+		for (String key : keys) {
+			sb.append(String.format("<tr><td><b>%s</b>&nbsp;</td><td>&nbsp;%s</td></tr>", key, System.getenv(key)));
 		}
 
+		return sb.toString();
 	}
 
 	public String getImageListAsHtml() {
-		if (!isAbortState) {
-    		StringBuilder sb = new StringBuilder();
-    		buildImageList();
-    		for (String imageRow : imageListRows) {
-    			sb.append(imageRow);
-    		}
-    		return sb.toString();
+		StringBuilder sb = new StringBuilder();
+		buildImageList();
+		for (String imageRow : imageListRows) {
+			sb.append(imageRow);
 		}
-		else {
-			logMessageToPage("getImageListAsHtml() call was skipped because the application load process was aborted.");
-			return "";
-		}
+		return sb.toString();
 	}
 
 	public String getStatusAsHtml() {
-		if (!isAbortState) {
-    		StringBuilder sb = new StringBuilder();
-    		String newline = System.getProperty("line.separator");
-    		if (statusLog.size() > 0) {
-    			sb.append("<ul>");
-    			for (String status : statusLog) {
-    				sb.append(String.format("<li>%s</li>%s", status.contains(newline) ? formatForPage(status) : status, newline));
-    				//sb.append(String.format("<li>%s</li>", status));
-    				// System.lineSeparator()));
-    			}
-    			sb.append("</ul>");
-    			statusLog.clear();
-    		}
-    		return sb.toString();
+		StringBuilder sb = new StringBuilder();
+		String newline = System.getProperty("line.separator");
+		if (statusLog.size() > 0) {
+			sb.append("<ul>");
+			for (String status : statusLog) {
+				sb.append(String.format("<li>%s</li>%s", status.contains(newline) ? formatForPage(status) : status, newline));
+				//sb.append(String.format("<li>%s</li>", status));
+				// System.lineSeparator()));
+			}
+			sb.append("</ul>");
+			statusLog.clear();
 		}
-		else {
-			logMessageToPage("getStatusAsHtml() call was skipped because the application load process was aborted.");
-			return "";
-		}
+		return sb.toString();
 	}
 
 	/**

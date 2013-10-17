@@ -147,7 +147,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 	
 	@Override
 	public void prepMode_CreateBucket(AmazonS3Client s3Client, String bucketName) {
-    	CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
+    	CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName, com.amazonaws.services.s3.model.Region.fromValue(System.getProperty("REGION")));
         s3Client.createBucket(createBucketRequest);
 	}
 

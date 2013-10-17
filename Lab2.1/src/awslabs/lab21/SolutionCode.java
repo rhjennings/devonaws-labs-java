@@ -41,7 +41,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
     @Override
     public void createBucket(AmazonS3 s3Client, String bucketName) {
     	// Construct a CreateBucketRequest object that contains the provided bucket name.
-    	CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
+    	CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName, com.amazonaws.services.s3.model.Region.fromValue(System.getProperty("REGION")));
 
         // Submit the request using the createBucket method of the s3Client object.
         s3Client.createBucket(createBucketRequest);
