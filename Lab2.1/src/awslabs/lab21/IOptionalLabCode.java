@@ -14,6 +14,7 @@
  */
 package awslabs.lab21;
 
+import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
 
 public interface IOptionalLabCode {

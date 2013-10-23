@@ -14,10 +14,11 @@
  */
 package awslabs.lab21;
 
+import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
 
 public interface ILabCode {
-	void createBucket(AmazonS3 s3Client, String bucketName);
+	void createBucket(AmazonS3 s3Client, String bucketName, Region region);
     void putObject(AmazonS3 s3Client, String bucketName, String sourceFileName, String objectKey);
     void listObjects(AmazonS3 s3Client, String bucketName);
     void makeObjectPublic(AmazonS3 s3Client, String bucketName, String key);

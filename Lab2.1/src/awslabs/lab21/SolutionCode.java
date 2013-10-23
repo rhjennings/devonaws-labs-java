@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -39,12 +40,20 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 
     @Override
-    public void createBucket(AmazonS3 s3Client, String bucketName) {
+    public void createBucket(AmazonS3 s3Client, String bucketName, Region region) {
     	// Construct a CreateBucketRequest object that contains the provided bucket name.
-    	CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName, com.amazonaws.services.s3.model.Region.fromValue(System.getProperty("REGION")));
+		// If the region is other than us-east-1, we need to specify a regional constraint.
+    	CreateBucketRequest createBucketRequest;
+		if (region.getName().equals("us-east-1")) {
+			createBucketRequest = new CreateBucketRequest(bucketName);
+		}
+		else {
+			createBucketRequest = new CreateBucketRequest(bucketName, com.amazonaws.services.s3.model.Region.fromValue(region.getName()));
+		}
 
         // Submit the request using the createBucket method of the s3Client object.
         s3Client.createBucket(createBucketRequest);
+        
     }
 
     @Override
@@ -106,9 +115,9 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
     	    return;
     	}
     	catch (AmazonS3Exception ex) {
-    	    if (!ex.getErrorCode().equals("BucketNotEmpty")) {
-    		// The only exception we're going to handle is BucketNotEmpty, so rethrow anything else.
-    		throw ex; 
+    		if (!ex.getErrorCode().equals("BucketNotEmpty")) {
+    			// The only other exception we're going to handle is BucketNotEmpty, so rethrow anything else.
+    			throw ex; 
     	    }
     	}
     	

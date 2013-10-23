@@ -28,13 +28,10 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CreateBucketRequest;
 
 /**
  * Project: Lab5.1
@@ -141,8 +138,16 @@ public class Lab51 {
 
 			AmazonS3Client s3Client = labCode.createS3Client(credentials);
 			// Create the bucket first
+			// If the region is other than us-east-1, we need to specify a regional constraint for the 
+			// create bucket call. 
+			String region = System.getProperty("REGION");
+			if (region.equals("us-east-1")) {
+				s3Client.createBucket(bucketName);
+			}
+			else {
+				s3Client.createBucket(bucketName, com.amazonaws.services.s3.model.Region.fromValue(region));
+			}
 			
-			s3Client.createBucket(bucketName, com.amazonaws.services.s3.model.Region.fromValue(System.getProperty("REGION")));
 			String rootPath = Lab51.class.getResource("/").getFile(); 
 			for (String image : missingImages) {
 				String filePath = rootPath + image;
@@ -156,7 +161,7 @@ public class Lab51 {
 		}
 		}
 		catch (Exception ex) {
-			logMessageToPage("syncImages() error: %s", ex.getMessage());
+			logMessageToPage("syncImages() error: [%s] %s", ex.getClass().getName(), ex.getMessage());
 		}
 	}
 

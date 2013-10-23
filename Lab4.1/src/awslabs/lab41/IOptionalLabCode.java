@@ -26,11 +26,11 @@ import com.amazonaws.services.s3.AmazonS3Client;
  */
 public interface IOptionalLabCode {
     void prepMode_RemoveRoles(AmazonIdentityManagementClient iamClient, String... roles);
-    void prepMode_CreateBucket(AmazonS3Client s3Client, String bucketName);
+	void prepMode_CreateBucket(AmazonS3Client s3Client, String bucketName, Region region);	
 
     Boolean appMode_TestSnsAccess(Region region, BasicSessionCredentials credentials);
     Boolean appMode_TestSqsAccess(Region region, BasicSessionCredentials credentials);
     Boolean appMode_TestIamAccess(Region region, BasicSessionCredentials credentials);
 
-    void removeLabBuckets(AmazonS3Client s3Client, List<String> bucketNames);	
+    void removeLabBuckets(AmazonS3Client s3Client, List<String> bucketNames);
 }

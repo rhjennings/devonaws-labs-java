@@ -118,10 +118,10 @@ public class StudentCode extends SolutionCode {
 	 * @param bucketName	The bucket to create.
 	 */
 	@Override
-	public void prepMode_CreateBucket(AmazonS3Client s3Client, String bucketName) {
+	public void prepMode_CreateBucket(AmazonS3Client s3Client, String bucketName, Region region) {
 
 		//TODO: Replace this call to the super class with your own method implementation.
-		super.prepMode_CreateBucket(s3Client, bucketName);
+		super.prepMode_CreateBucket(s3Client, bucketName, region);
 	}
 
 	/**

@@ -127,7 +127,7 @@ public class Lab41 {
         s3Client.setRegion(Lab41.region);
         for (String bucketName: labVariables.getBucketNames())
         {
-        	optionalLabCode.prepMode_CreateBucket(s3Client, bucketName);
+        	optionalLabCode.prepMode_CreateBucket(s3Client, bucketName, region);
             System.out.println("Created bucket: " + bucketName);
         }
  

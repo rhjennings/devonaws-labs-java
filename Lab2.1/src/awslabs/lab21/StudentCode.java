@@ -18,6 +18,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Date;
 
+import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
@@ -36,15 +37,17 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 public class StudentCode extends SolutionCode {
     /**
      * Use the provided S3 client object to create the specified bucket.
-     * Hint: Use the putBucket() method of the client object.
+     * Hint: Use the createBucket() method of the client object.
+     * 		 If the region is anything other than us-east-1, it needs to be 
+     * 		 explicitly specified in the request.
      * 
      * @param s3Client	 The S3 client object.	
      * @param bucketName The name of the bucket to create.
      */
     @Override
-    public void createBucket(AmazonS3 s3Client, String bucketName) {
+    public void createBucket(AmazonS3 s3Client, String bucketName, Region region) {
 	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.createBucket(s3Client, bucketName);
+	super.createBucket(s3Client, bucketName, region);
     }
 
     /**

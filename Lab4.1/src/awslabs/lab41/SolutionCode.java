@@ -146,9 +146,17 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 
 	
 	@Override
-	public void prepMode_CreateBucket(AmazonS3Client s3Client, String bucketName) {
-    	CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName, com.amazonaws.services.s3.model.Region.fromValue(System.getProperty("REGION")));
-        s3Client.createBucket(createBucketRequest);
+	public void prepMode_CreateBucket(AmazonS3Client s3Client, String bucketName, Region region) {
+    	// Construct a CreateBucketRequest object that contains the provided bucket name.
+		// If the region is other than us-east-1, we need to specify a regional constraint.
+    	CreateBucketRequest createBucketRequest;
+		if (region.getName().equals("us-east-1")) {
+			createBucketRequest = new CreateBucketRequest(bucketName);
+		}
+		else {
+			createBucketRequest = new CreateBucketRequest(bucketName, com.amazonaws.services.s3.model.Region.fromValue(region.getName()));
+		}
+		s3Client.createBucket(createBucketRequest);
 	}
 
 	
