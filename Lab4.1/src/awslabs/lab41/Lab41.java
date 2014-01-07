@@ -94,7 +94,7 @@ public class Lab41 {
     	AWSCredentials credentials = getCredentials("prepmode");  
     	
     	AmazonIdentityManagementClient iamClient = new AmazonIdentityManagementClient(credentials);
-    	iamClient.setRegion(Lab41.region);
+    	//iamClient.setRegion(Lab41.region);
     	
         String trustRelationshipSource = readTextFile("TrustRelationship.txt");
         String developmentPolicyText = readTextFile("development_role.txt");
@@ -139,7 +139,7 @@ public class Lab41 {
 		
         Credentials devCredentials=null, prodCredentials=null;
         AWSSecurityTokenServiceClient stsClient = new AWSSecurityTokenServiceClient(credentials);
-        stsClient.setRegion(Lab41.region);
+        //stsClient.setRegion(Lab41.region);
         
         System.out.println("\nAssuming developer role to retrieve developer session credentials.");
         Boolean retry;
