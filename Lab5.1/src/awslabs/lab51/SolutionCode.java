@@ -57,7 +57,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
 
 	@Override
 	public String getUrlForItem(AmazonS3Client s3Client, String key, String bucket) {
-		Date nowPlusTwoMinutes = new Date(System.currentTimeMillis() + 2000L);
+		Date nowPlusTwoMinutes = new Date(System.currentTimeMillis() + 120000L);
 
 		// Construct a GeneratePresignedUrlRequest object for the provided object.
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, key);
