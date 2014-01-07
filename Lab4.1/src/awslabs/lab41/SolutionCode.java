@@ -197,7 +197,7 @@ public abstract class SolutionCode implements ILabCode, IOptionalLabCode {
         try
         {
         	AmazonIdentityManagementClient iamClient = new AmazonIdentityManagementClient(credentials);
-        	iamClient.setRegion(region);
+        	//iamClient.setRegion(region);
             iamClient.listUsers(new ListUsersRequest());
             return true;
         }
