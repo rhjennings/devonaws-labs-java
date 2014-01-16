@@ -36,7 +36,7 @@ public class LabUtility {
             System.out.println("Error Type:       " + ase.getErrorType());
             System.out.println("Request ID:       " + ase.getRequestId());
             System.out.println("Stack trace:");
-            System.out.println(ase.getStackTrace());
+            ase.printStackTrace();
         }
         else if (ex instanceof AmazonClientException)
         {
@@ -46,7 +46,7 @@ public class LabUtility {
             System.out.println("a problem without before communicating with the service.");
             System.out.println("Error Message: " + ace.getMessage());
             System.out.println("Stack trace:");
-            System.out.println(ace.getStackTrace());
+            ace.printStackTrace();
         }
         else
         {
@@ -55,7 +55,7 @@ public class LabUtility {
             System.out.println("Error Message: " + ex.getMessage());
             System.out.println("Cause: " + ex.getCause());
             System.out.println("Stack trace:");
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
         }
     }
 }
