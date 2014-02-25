@@ -96,7 +96,7 @@ public class StudentCode extends SolutionCode {
     /**
      * Create and return a pre-signed URL for the specified item. Set the URL to expire one hour from the 
      * moment it was generated.
-     * Hint: Use the getPreSignedUrl() method of the client object.
+     * Hint: Use the generatePresignedUrl() method of the client object.
      * 
      * @param s3Client	 The S3 client object.	
      * @param bucketName The name of the bucket containing the object.
