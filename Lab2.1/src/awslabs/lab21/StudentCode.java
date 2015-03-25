@@ -19,7 +19,9 @@ import java.net.URL;
 import java.util.Date;
 
 import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -31,99 +33,141 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 /**
  * Project: Lab2.1
  * 
- * The primary purpose of this lab is to gain experience working with S3 programmatically.
+ * The primary purpose of this lab is to gain experience working with S3
+ * programmatically.
  */
 @SuppressWarnings("unused")
 public class StudentCode extends SolutionCode {
-    /**
-     * Use the provided S3 client object to create the specified bucket.
-     * Hint: Use the createBucket() method of the client object.
-     * 		 If the region is anything other than us-east-1, it needs to be 
-     * 		 explicitly specified in the request.
-     * 
-     * @param s3Client	 The S3 client object.	
-     * @param bucketName The name of the bucket to create.
-     */
-    @Override
-    public void createBucket(AmazonS3 s3Client, String bucketName, Region region) {
-	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.createBucket(s3Client, bucketName, region);
-    }
+	private Bucket bucket = null;
+	/**
+	 * Use the provided S3 client object to create the specified bucket. Hint:
+	 * Use the createBucket() method of the client object. If the region is
+	 * anything other than us-east-1, it needs to be explicitly specified in the
+	 * request.
+	 * 
+	 * @param s3Client
+	 *            The S3 client object.
+	 * @param bucketName
+	 *            The name of the bucket to create.
+	 */
+	@Override
+	public void createBucket(AmazonS3 s3Client, String bucketName, Region region) {
+		// TODO: Replace this call to the super class with your own
+		// implementation of the method.
+		CreateBucketRequest bucketRequest;
+		if ("us-east-1".equals(region.getName())) {
+			bucketRequest = new CreateBucketRequest(bucketName);
+		} else {
+			bucketRequest = new CreateBucketRequest(bucketName, com.amazonaws.services.s3.model.Region.fromValue(region.getName()));
+		}
+		
+		bucket = s3Client.createBucket(bucketRequest);
+	}
 
-    /**
-     * Upload the provided item to the specified bucket.
-     * Hint: Use the putObject() method of the client object.
-     * 
-     * @param s3Client	 The S3 client object.	
-     * @param bucketName The name of the target bucket.
-     * @param sourceFile The name of the file to upload.
-     * @param objectKey  The key to assign to the new S3 object.
-     */
-    @Override
-    public void putObject(AmazonS3 s3Client, String bucketName, String sourceFile, String objectKey) {
-	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.putObject(s3Client, bucketName, sourceFile, objectKey);
-    }
+	/**
+	 * Upload the provided item to the specified bucket. Hint: Use the
+	 * putObject() method of the client object.
+	 * 
+	 * @param s3Client
+	 *            The S3 client object.
+	 * @param bucketName
+	 *            The name of the target bucket.
+	 * @param sourceFile
+	 *            The name of the file to upload.
+	 * @param objectKey
+	 *            The key to assign to the new S3 object.
+	 */
+	@Override
+	public void putObject(AmazonS3 s3Client, String bucketName, String sourceFile, String objectKey) {
+		// TODO: Replace this call to the super class with your own
+		// implementation of the method.
+		File file =  new File(sourceFile);
+		
+		PutObjectRequest putRequest = new PutObjectRequest(bucketName, objectKey, file);
+		
+		s3Client.putObject(putRequest);
+	}
 
-    /**
-     * List the contents of the specified bucket by writing the object key and item size to the console.
-     * Hint: Use the listObjects() method of the client object.
-     * 
-     * @param s3Client	 The S3 client object.	
-     * @param bucketName The name of the bucket containing the objects to list.
-     */
-    @Override
-    public void listObjects(AmazonS3 s3Client, String bucketName) {
-	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.listObjects(s3Client, bucketName);
-    }
+	/**
+	 * List the contents of the specified bucket by writing the object key and
+	 * item size to the console. Hint: Use the listObjects() method of the
+	 * client object.
+	 * 
+	 * @param s3Client
+	 *            The S3 client object.
+	 * @param bucketName
+	 *            The name of the bucket containing the objects to list.
+	 */
+	@Override
+	public void listObjects(AmazonS3 s3Client, String bucketName) {
+		// TODO: Replace this call to the super class with your own
+		// implementation of the method.
+		ListObjectsRequest request = new ListObjectsRequest().withBucketName(bucketName);
+		ObjectListing listing = s3Client.listObjects(request);
+		for (S3ObjectSummary objectSummary : listing.getObjectSummaries()) {
+        	System.out.println(objectSummary.getKey() + " (size: " + objectSummary.getSize() + ")");
+        }
+	}
 
-    /**
-     * Change the ACL for the specified object to make it publicly readable.
-     * Hint: Call the setObjectAcl() method of the client object. Use the CannedAccessControlList 
-     * enumeration to set the ACL for the object to PublicRead.
-     * 
-     * @param s3Client	 The S3 client object.	
-     * @param bucketName The name of the bucket containing the object.
-     * @param key        The key used to identify the object.
-     */
-    @Override
-    public void makeObjectPublic(AmazonS3 s3Client, String bucketName, String key) {
-	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.makeObjectPublic(s3Client, bucketName, key);
-    }
+	/**
+	 * Change the ACL for the specified object to make it publicly readable.
+	 * Hint: Call the setObjectAcl() method of the client object. Use the
+	 * CannedAccessControlList enumeration to set the ACL for the object to
+	 * PublicRead.
+	 * 
+	 * @param s3Client
+	 *            The S3 client object.
+	 * @param bucketName
+	 *            The name of the bucket containing the object.
+	 * @param key
+	 *            The key used to identify the object.
+	 */
+	@Override
+	public void makeObjectPublic(AmazonS3 s3Client, String bucketName, String key) {
+		// TODO: Replace this call to the super class with your own
+		// implementation of the method.
+		s3Client.setObjectAcl(bucketName, key, CannedAccessControlList.PublicReadWrite);
+	}
 
-    /**
-     * Create and return a pre-signed URL for the specified item. Set the URL to expire one hour from the 
-     * moment it was generated.
-     * Hint: Use the generatePresignedUrl() method of the client object.
-     * 
-     * @param s3Client	 The S3 client object.	
-     * @param bucketName The name of the bucket containing the object.
-     * @param key	 The key used to identify the object.
-     * @return 		 The pre-signed URL for the object.
-     */
-    @Override
-    public String generatePreSignedUrl(AmazonS3 s3Client, String bucketName, String key) {
-	//TODO: Replace this call to the super class with your own implementation of the method.
-	return super.generatePreSignedUrl(s3Client, bucketName, key);
-    }
+	/**
+	 * Create and return a pre-signed URL for the specified item. Set the URL to
+	 * expire one hour from the moment it was generated. Hint: Use the
+	 * generatePresignedUrl() method of the client object.
+	 * 
+	 * @param s3Client
+	 *            The S3 client object.
+	 * @param bucketName
+	 *            The name of the bucket containing the object.
+	 * @param key
+	 *            The key used to identify the object.
+	 * @return The pre-signed URL for the object.
+	 */
+	@Override
+	public String generatePreSignedUrl(AmazonS3 s3Client, String bucketName, String key) {
+		// TODO: Replace this call to the super class with your own
+		// implementation of the method.
+		return s3Client.generatePresignedUrl(bucketName, key, null).toString();
+	}
 
-    /**
-     * Delete the specified bucket. You will use the deleteBucket() method of the client object to 
-     * delete the bucket, but first you will need to delete the bucket contents. To delete the contents, 
-     * you will need to list the objects and delete them individually (DeleteObject() method) or as a 
-     * batch (DeleteObjects() method).
-     * 
-     * The purpose of this task is to gain experience writing applications that remove unused AWS resources
-     * in an automated manner.
-     * 
-     * @param s3Client	 The S3 client object.	
-     * @param bucketName The name of the bucket to delete.
-     */
-    @Override
-    public void deleteBucket(AmazonS3 s3Client, String bucketName) {
-	//TODO: Replace this call to the super class with your own implementation of the method.
-	super.deleteBucket(s3Client, bucketName);
-    }
+	/**
+	 * Delete the specified bucket. You will use the deleteBucket() method of
+	 * the client object to delete the bucket, but first you will need to delete
+	 * the bucket contents. To delete the contents, you will need to list the
+	 * objects and delete them individually (DeleteObject() method) or as a
+	 * batch (DeleteObjects() method).
+	 * 
+	 * The purpose of this task is to gain experience writing applications that
+	 * remove unused AWS resources in an automated manner.
+	 * 
+	 * @param s3Client
+	 *            The S3 client object.
+	 * @param bucketName
+	 *            The name of the bucket to delete.
+	 */
+	@Override
+	public void deleteBucket(AmazonS3 s3Client, String bucketName) {
+		// TODO: Replace this call to the super class with your own
+		// implementation of the method.
+//		s3Client.deleteBucket(bucketName);
+	}
 }

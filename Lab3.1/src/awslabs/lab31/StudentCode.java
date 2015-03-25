@@ -15,8 +15,22 @@ package awslabs.lab31;
 import java.util.List;
 
 import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.model.CreateTopicRequest;
+import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.sns.model.ListSubscriptionsByTopicRequest;
+import com.amazonaws.services.sns.model.ListSubscriptionsByTopicResult;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.SubscribeRequest;
+import com.amazonaws.services.sns.model.Subscription;
+import com.amazonaws.services.sns.model.UnsubscribeRequest;
 import com.amazonaws.services.sqs.AmazonSQSClient;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.DeleteMessageRequest;
+import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
+import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
 import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 
 /**
  * Project: Lab3.1
@@ -33,8 +47,9 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public String createQueue(AmazonSQSClient sqsClient, String queueName) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		return super.createQueue(sqsClient, queueName);
+		CreateQueueRequest queueRequest = new CreateQueueRequest(queueName);
+		
+		return sqsClient.createQueue(queueRequest).getQueueUrl();
 	}
 
 	/**
@@ -47,8 +62,10 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public String getQueueArn(AmazonSQSClient sqsClient, String queueUrl) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		return super.getQueueArn(sqsClient, queueUrl);
+		GetQueueAttributesRequest request = new GetQueueAttributesRequest().withAttributeNames("QueueArn").withQueueUrl(queueUrl);
+		GetQueueAttributesResult result = sqsClient.getQueueAttributes(request);
+		
+		return result.getAttributes().get("QueueArn");
 	}
 
 	/**
@@ -61,8 +78,10 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public String createTopic(AmazonSNSClient snsClient, String topicName) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		return super.createTopic(snsClient, topicName);
+		CreateTopicRequest request = new CreateTopicRequest().withName(topicName);
+		CreateTopicResult result = snsClient.createTopic(request);
+		
+		return result.getTopicArn();
 	}
 
 	/**
@@ -75,8 +94,12 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void createSubscription(AmazonSNSClient snsClient, String queueArn, String topicArn) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		super.createSubscription(snsClient, queueArn, topicArn);
+		SubscribeRequest request = new SubscribeRequest()
+			.withEndpoint(queueArn)
+			.withProtocol("sqs")
+			.withTopicArn(topicArn);
+		
+		snsClient.subscribe(request);
 	}
 
 	/**
@@ -89,8 +112,12 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void publishTopicMessage(AmazonSNSClient snsClient, String topicArn, String subject, String message) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		super.publishTopicMessage(snsClient, topicArn, subject, message);
+		PublishRequest request = new PublishRequest()
+			.withSubject(subject)
+			.withMessage(message)
+			.withTopicArn(topicArn);
+		
+		snsClient.publish(request);
 	}
 
 	/**
@@ -102,8 +129,9 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void postToQueue(AmazonSQSClient sqsClient, String queueUrl, String messageText) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		super.postToQueue(sqsClient, queueUrl, messageText);
+		SendMessageRequest request = new SendMessageRequest(queueUrl, messageText);
+		
+		sqsClient.sendMessage(request);
 	}
 
 	/**
@@ -116,8 +144,9 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public List<Message> readMessages(AmazonSQSClient sqsClient, String queueUrl) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		return super.readMessages(sqsClient, queueUrl);
+		ReceiveMessageRequest request = new ReceiveMessageRequest(queueUrl);
+		
+		return sqsClient.receiveMessage(request).getMessages();
 	}
 
 	/**
@@ -129,8 +158,9 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void removeMessage(AmazonSQSClient sqsClient, String queueUrl, String receiptHandle) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		super.removeMessage(sqsClient, queueUrl, receiptHandle);
+		DeleteMessageRequest request = new DeleteMessageRequest(queueUrl, receiptHandle);
+		
+		sqsClient.deleteMessage(request);
 	}
 
 	/**
@@ -143,8 +173,13 @@ public class StudentCode extends SolutionCode {
 	 */
 	@Override
 	public void deleteSubscriptions(AmazonSNSClient snsClient, String topicArn) {
-		// TODO: Replace this call to the super class with your own method implementation.
-		super.deleteSubscriptions(snsClient, topicArn);
+		ListSubscriptionsByTopicRequest request = new ListSubscriptionsByTopicRequest(topicArn);
+		ListSubscriptionsByTopicResult result = snsClient.listSubscriptionsByTopic(request);
+		
+		for (Subscription s : result.getSubscriptions()) {
+			UnsubscribeRequest unsubscribeRequest = new UnsubscribeRequest(s.getSubscriptionArn());
+			snsClient.unsubscribe(unsubscribeRequest);
+		}
 	}
 
 	/**
